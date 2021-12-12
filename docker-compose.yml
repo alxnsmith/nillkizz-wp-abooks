@@ -12,7 +12,6 @@ services:
       MYSQL_PASSWORD: "${DB_USER_PASSWORD}"
       MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
     volumes:
-      - ./db_data/:/var/lib/mysql/
       - ./wp-data/:/docker-entrypoint-initdb.d/
 
   wp:
@@ -21,32 +20,21 @@ services:
       - db
     restart: always
     ports:
-      - ${IP}:8080:80
+      - ${IP}:80:80
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: "${DB_NAME}"
       WORDPRESS_DB_USER: "${DB_USER_NAME}"
       WORDPRESS_DB_PASSWORD: "${DB_USER_PASSWORD}"
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'WP_HOME', 'http://localhost' );
+        define( 'WP_SITEURL', 'http://localhost' );
     volumes:
       - type: bind
         source: ${PWD}/config/php/uploads.ini
         target: /usr/local/etc/php/conf.d/uploads.ini
-      - ./wp-app/:/var/www/html/ # Full wordpress project
-      #- ./plugin-name/:/var/www/html/wp-content/plugins/plugin-name  # Plugin development
-      #- ./theme-name/:/var/www/html/wp-content/themes/theme-name     # Theme development
-
-  wpcli:
-    image: wordpress:cli
-    depends_on:
-      - db
-      - wp
-    volumes:
-      - ./config/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_NAME: "${DB_NAME}"
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: "${DB_ROOT_PASSWORD}"
+      - ./nillkizz-abooks/:/var/www/html/wp-content/plugins/nillkizz-abooks/
 
   pma:
     image: phpmyadmin
@@ -61,6 +49,3 @@ services:
       - type: bind
         source: ${PWD}/config/php/uploads.ini
         target: /usr/local/etc/php/conf.d/uploads.ini
-
-volumes:
-  db_data: null

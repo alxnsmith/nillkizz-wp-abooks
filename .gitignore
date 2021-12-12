@@ -1,1 +1,5 @@
+!.gitsafe
+
 .env
+tmp_*
+wp-data
