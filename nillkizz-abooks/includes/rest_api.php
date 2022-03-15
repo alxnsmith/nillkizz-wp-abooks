@@ -35,6 +35,9 @@ function abooks()
 {
   global $wp_query;
   $args = Query::get_query_args("abook");
+  if (isset($_GET['date_after'])) $args['date_query']['after'] = $_GET['date_after'];
+  if (isset($_GET['date_before'])) $args['date_query']['after'] = $_GET['date_before'];
+
   $books = query_posts($args);
 
   header('X-WP-TotalPages: ' . $wp_query->max_num_pages);
@@ -76,6 +79,7 @@ class Handler
     $file = $chapter['file'];
     $meta = wp_get_attachment_metadata($file['ID']);
     return [
+      'ID' => $file['ID'],
       'name' => $file['title'],
       'url' => $file['url'],
       'length' => [
